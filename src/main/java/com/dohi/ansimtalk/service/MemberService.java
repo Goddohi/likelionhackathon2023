@@ -41,6 +41,31 @@ public class MemberService {
         return member.getId();
     }
 
+    //수정하는애 위에는 @Transactional따로해놓자
+    @Transactional
+    public Long jointest(Member member) {
+        List<Member> findMembers = memberRepository.findByPhone(member.getPhone());
+        List<Member> findMembers2 = memberRepository.findByName(member.getName());
+        if (!findMembers.isEmpty()) {
+            Member existingMember = findMembers.get(0);
+            if (!findMembers2.isEmpty()) {
+                Member existingMember2 = findMembers2.get(0);
+                if (!member.getPhone().equals(existingMember.getPhone())) {
+                    if (existingMember2.getId()== existingMember.getId()) {
+                        throw new IllegalStateException("이미 존재하는 번호입니다."); //수정할것 -> 문제점 이름과 핸드폰번호가 따로있어도 이미 있는 번호로 인식. ->해결방법 같은 id인지 증명할것
+                    }
+                } else {
+                    return existingMember.getId();
+                }
+            }
+        }
+        else {
+
+            memberRepository.save(member);
+        }
+        return member.getId();
+    }
+
 
 
     @Transactional
